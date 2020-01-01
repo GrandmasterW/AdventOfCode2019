@@ -1,14 +1,11 @@
-(ns aoc2019.hvlines
-    (:require [clojure.spec.alpha :as s]))
-
+(ns aoc2019.hvlines)
+  
 (defrecord Point [x y]) ; set x and y as usual
 (defrecord HVLine [orientation from to]) ; orientation should by :vertical or :horizontal, contains two Point-s
 
 (defn point [x y]
   "typing helper to create a Point - less typing..."
   (Point. x y))
-
-
 
 (defn compute-orientation [p1 p2]
   "returns the orientation for the resulting line p1 to p2"
@@ -22,19 +19,11 @@
   (if-not (= from to)
     (HVLine. (compute-orientation from to) from to)))
 
+(defn hvline [from to]
+  "typing helper to create a HVLine"
+  (make-hvline from to))
 
 
-(s/def ::hvline
-  (s/keys
-   :req-un
-   [::orientation ::from ::to]
-   ))
-
-(comment
-  (def hvl1 (make-hvline (point 0 0)(point 8 0)))
-
-  (s/valid? ::hvline hvl1)
-  )
 ;;
 ;; methods
 ;;
@@ -52,18 +41,17 @@
 
 (defn interval-contains-val [val i1 i2]
   "If val is between i1 and i2 or i2 and i1 (integers only), than return val"
-  (do
-    ;(println "icv: " val i1 i2)
-    (let [lower (min i1 i2)
-          upper (max i1 i2)]
-      (if (and (>= val lower)(<= val upper))
-        val))))
+  (let [lower (min i1 i2)
+        upper (max i1 i2)]
+    (if (and (>= val lower)(<= val upper))
+      val)))
 
 (defn point-at-line-xy [key point line]
   "check if the x or y value of point is in the interval of x or y of the line. If so, returns the difference of the point-value and the minimum line-value."
     (if-let [val (interval-contains-val (key point) (key (:from line)) (key (:to line)))]
       (Math/abs (- val (key (:from line)))))
   )
+
 
 (defn point-at-line [point line]
   "If the point is on the line, return the line points / segments / steps from 'from' till the point. Nil else. Diagonal not implemented yet"
@@ -77,7 +65,7 @@
 
 (defn line-contains [key l1 l2]
   "extracts value for key (:x, :y) to compute if val is in range of l2"
-     (interval-contains-val (key (:from l1)) (key (:from l2)) (key (:to l2))))
+  (interval-contains-val (key (:from l1)) (key (:from l2)) (key (:to l2))))
 
 (defn comp-one-point [line1 line2]
   "Returns the one if any matching point for a horizontal and a vertical line - others not implemented!"
@@ -97,7 +85,3 @@
       (and (not= o1 o2) (not= o1 :diagonal) (not= o2 :diagonal)) (comp-one-point line1 line2) ; only if h and v lines for now
       :else nil)))
 
-(comment
-(def line1 (make-hvline (Point. 8 5)(Point. 3 5)))
-(def line2 (make-hvline (Point. 6 7)(Point. 6 3)))
-)

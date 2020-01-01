@@ -1,5 +1,8 @@
 (ns aoc2019.day4
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as st]))
+
+
 
 
 (defn contains-repeated-nums? [soi]
@@ -37,3 +40,16 @@
   
 (defn count-passwords-p2 [from to]
   (count (gen-passwords from to pw-conform-p2?)))
+
+
+;; specs
+(s/def ::int6
+  (s/and int?
+         (partial > 1000000)
+         (partial <   99999)
+         pos?))
+
+(s/fdef pw-conform-p1?
+  :args (s/cat :x ::int6)
+  :ret (s/or :true true :false false))
+
